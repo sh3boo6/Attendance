@@ -6,8 +6,8 @@ const confirmReset = ref(false)
 const confirmNew = ref(false)
 
 const items = [[
-  { label: 'تصدير نسخة JSON', icon: 'i-lucide-download', onSelect: exportJson },
-  { label: 'استيراد نسخة JSON', icon: 'i-lucide-upload', onSelect: () => fileInput.value?.click() }
+  { label: 'حفظ', icon: 'i-lucide-save', onSelect: exportJson },
+  { label: 'فتح', icon: 'i-lucide-file', onSelect: () => fileInput.value?.click() }
 ], [
   { label: 'برنامج جديد', icon: 'i-lucide-plus', onSelect: () => { confirmNew.value = true } },
   { label: 'إعادة ضبط البيانات', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => { confirmReset.value = true } }

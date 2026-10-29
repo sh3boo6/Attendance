@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       title: 'نظام التحضير',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover' },
-        { key: 'theme-color', name: 'theme-color', content: '#ffffff' },
+        
         { name: 'description', content: 'تطبيق تحضير المشاركين وإصدار تقرير استحقاق الشهادات' }
       ],
       link: [
@@ -30,11 +30,11 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     manifest: {
       name: 'نظام التحضير',
-      short_name: 'التحضير',
+      short_name: 'نظام التحضير',
       description: 'تحضير المشاركين وإصدار تقرير استحقاق الشهادات',
       lang: 'ar',
       dir: 'rtl',
-      theme_color: '#0f766e',
+      theme_color: '#ffffff',
       background_color: '#ffffff',
       display: 'standalone',
       start_url: '/',

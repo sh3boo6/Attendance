@@ -9,6 +9,20 @@ const toast = useToast()
 const day = ref('1')
 const session = ref('1')
 const search = ref('')
+const showAddParticipant = ref(false)
+const newParticipant = ref({ name: '', nationalId: '', org: '' })
+
+function addParticipant() {
+  if (!program.value || !newParticipant.value.name.trim()) return
+  program.value.participants.push({
+    id: crypto.randomUUID(),
+    name: newParticipant.value.name.trim(),
+    nationalId: newParticipant.value.nationalId.trim(),
+    org: newParticipant.value.org.trim()
+  })
+  newParticipant.value = { name: '', nationalId: '', org: '' }
+  showAddParticipant.value = false
+}
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 watch(search, () => {
   pagination.value.pageIndex = 0
@@ -123,6 +137,14 @@ function save() {
                 icon="i-lucide-rotate-ccw"
                 @click="setAll(d, s, program.participants.map(p => p.id), false)"
               />
+              <UButton
+                size="xs"
+                color="primary"
+                variant="soft"
+                label="إضافة مشارك"
+                icon="i-lucide-user-plus"
+                @click="showAddParticipant = true"
+              />
             </div>
           </div>
           <UInput
@@ -144,6 +166,44 @@ function save() {
                 aria-label="مسح"
                 @click="search = ''"
               />
+
+              <UModal
+                v-model:open="showAddParticipant"
+                title="إضافة مشارك"
+              >
+                <template #body>
+                  <div class="space-y-3">
+                    <UInput
+                      v-model="newParticipant.name"
+                      placeholder="الاسم"
+                    />
+                    <UInput
+                      v-model="newParticipant.nationalId"
+                      placeholder="رقم الهوية"
+                    />
+                    <UInput
+                      v-model="newParticipant.org"
+                      placeholder="المدرسة أو جهة العمل"
+                    />
+                  </div>
+                </template>
+                <template #footer>
+                  <div class="flex w-full justify-end gap-2">
+                    <UButton
+                      label="إلغاء"
+                      color="neutral"
+                      variant="outline"
+                      @click="showAddParticipant = false"
+                    />
+                    <UButton
+                      label="إضافة"
+                      icon="i-lucide-plus"
+                      :disabled="!newParticipant.name.trim()"
+                      @click="addParticipant"
+                    />
+                  </div>
+                </template>
+              </UModal>
             </template>
           </UInput>
         </div>

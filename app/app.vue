@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { ar } from '@nuxt/ui/locale'
+
+// لون شريط حالة الجوال يتبع الوضع الفاتح/الداكن (نفس خلفية الهيدر)
+const colorMode = useColorMode()
+useHead({
+  meta: [{
+    key: 'theme-color',
+    name: 'theme-color',
+    content: computed(() => colorMode.value === 'dark' ? '#0f172b' : '#ffffff')
+  }]
+})
 </script>
 
 <template>

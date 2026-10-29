@@ -11,8 +11,8 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'ar', dir: 'rtl' },
       title: 'نظام التحضير',
       meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'theme-color', content: '#0f766e' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover' },
+        { key: 'theme-color', name: 'theme-color', content: '#ffffff' },
         { name: 'description', content: 'تطبيق تحضير المشاركين وإصدار تقرير استحقاق الشهادات' }
       ],
       link: [

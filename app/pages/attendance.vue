@@ -3,7 +3,7 @@ import { getPaginationRowModel } from '@tanstack/vue-table'
 import type { TableColumn } from '@nuxt/ui'
 import type { Participant } from '~/types'
 
-const { program, isPresent, setPresent, setAll, markSaved, isSaved, presentCount } = useAttendance()
+const { program, removeParticipant, isPresent, setPresent, setAll, markSaved, isSaved, presentCount } = useAttendance()
 const toast = useToast()
 
 const day = ref('1')
@@ -11,10 +11,6 @@ const session = ref('1')
 const search = ref('')
 const showAddParticipant = ref(false)
 const newParticipant = ref({ name: '', nationalId: '', org: '' })
-
-function toEnglishDigits(value: string) {
-  return value.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
-}
 
 function addParticipant() {
   if (!program.value || !newParticipant.value.name.trim()) return
@@ -27,6 +23,22 @@ function addParticipant() {
   newParticipant.value = { name: '', nationalId: '', org: '' }
   showAddParticipant.value = false
 }
+const toDelete = ref<Participant | null>(null)
+const confirmDelete = computed({
+  get: () => !!toDelete.value,
+  set: (v: boolean) => {
+    if (!v) toDelete.value = null
+  }
+})
+
+function doDelete() {
+  if (!toDelete.value) return
+  const { id, name } = toDelete.value
+  removeParticipant(id)
+  toDelete.value = null
+  toast.add({ title: 'تم حذف المتدرب', description: name, color: 'neutral', icon: 'i-lucide-trash-2' })
+}
+
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 watch(search, () => {
   pagination.value.pageIndex = 0
@@ -44,7 +56,8 @@ const columns: TableColumn<Participant>[] = [
   { accessorKey: 'name', header: 'الاسم' },
   { accessorKey: 'nationalId', header: 'رقم الهوية', meta: hideSm },
   { accessorKey: 'org', header: 'الجهة', meta: hideMd },
-  { id: 'status', header: 'الحضور' }
+  { id: 'status', header: 'الحضور' },
+  { id: 'actions', header: '' }
 ]
 
 const dayItems = computed(() =>
@@ -217,6 +230,16 @@ function save() {
             />
           </div>
         </template>
+        <template #actions-cell="{ row }">
+          <UButton
+            icon="i-lucide-trash-2"
+            color="error"
+            variant="ghost"
+            size="sm"
+            :aria-label="`حذف ${row.original.name}`"
+            @click="toDelete = row.original"
+          />
+        </template>
         <template #empty>
           <p class="py-6 text-center text-muted">
             لا توجد نتائج مطابقة
@@ -247,28 +270,28 @@ function save() {
           <div>
             <label class="mb-1 block text-sm font-medium">الاسم</label>
             <UInput
-              v-model="newParticipant.name"
+              :model-value="newParticipant.name"
               placeholder="الاسم"
               class="w-full"
-              @input="(e: Event) => newParticipant.name = toEnglishDigits((e.target as HTMLInputElement).value)"
+              @update:model-value="(v: string | number | null | undefined) => newParticipant.name = toEnglishDigits(v)"
             />
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium">رقم الهوية</label>
             <UInput
-              v-model="newParticipant.nationalId"
+              :model-value="newParticipant.nationalId"
               placeholder="رقم الهوية"
               class="w-full"
-              @input="(e: Event) => newParticipant.nationalId = toEnglishDigits((e.target as HTMLInputElement).value)"
+              @update:model-value="(v: string | number | null | undefined) => newParticipant.nationalId = toEnglishDigits(v)"
             />
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium">المدرسة أو جهة العمل</label>
             <UInput
-              v-model="newParticipant.org"
+              :model-value="newParticipant.org"
               placeholder="المدرسة أو جهة العمل"
               class="w-full"
-              @input="(e: Event) => newParticipant.org = toEnglishDigits((e.target as HTMLInputElement).value)"
+              @update:model-value="(v: string | number | null | undefined) => newParticipant.org = toEnglishDigits(v)"
             />
           </div>
         </div>
@@ -286,6 +309,28 @@ function save() {
             icon="i-lucide-plus"
             :disabled="!newParticipant.name.trim()"
             @click="addParticipant"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="confirmDelete"
+      title="حذف المتدرب"
+      :description="`سيتم حذف «${toDelete?.name ?? ''}» وكل سجلات حضوره من جميع الجلسات نهائياً.`"
+    >
+      <template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <UButton
+            label="إلغاء"
+            color="neutral"
+            variant="outline"
+            @click="toDelete = null"
+          />
+          <UButton
+            label="نعم، احذف"
+            color="error"
+            @click="doDelete"
           />
         </div>
       </template>

@@ -11,10 +11,6 @@ const participants = ref<Participant[]>([])
 const showAddParticipant = ref(false)
 const newParticipant = ref({ name: '', nationalId: '', org: '' })
 
-function toEnglishDigits(value: string) {
-  return value.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
-}
-
 function addParticipant() {
   if (!newParticipant.value.name.trim()) return
   participants.value.push({
@@ -348,28 +344,28 @@ function start() {
               <div>
                 <label class="mb-1 block text-sm font-medium">الاسم</label>
                 <UInput
-                  v-model="newParticipant.name"
+                  :model-value="newParticipant.name"
                   placeholder="الاسم"
                   class="w-full"
-                  @input="(e: Event) => newParticipant.name = toEnglishDigits((e.target as HTMLInputElement).value)"
+                  @update:model-value="(v: string | number | null | undefined) => newParticipant.name = toEnglishDigits(v)"
                 />
               </div>
               <div>
                 <label class="mb-1 block text-sm font-medium">رقم الهوية</label>
                 <UInput
-                  v-model="newParticipant.nationalId"
+                  :model-value="newParticipant.nationalId"
                   placeholder="رقم الهوية"
                   class="w-full"
-                  @input="(e: Event) => newParticipant.nationalId = toEnglishDigits((e.target as HTMLInputElement).value)"
+                  @update:model-value="(v: string | number | null | undefined) => newParticipant.nationalId = toEnglishDigits(v)"
                 />
               </div>
               <div>
                 <label class="mb-1 block text-sm font-medium">المدرسة أو جهة العمل</label>
                 <UInput
-                  v-model="newParticipant.org"
+                  :model-value="newParticipant.org"
                   placeholder="المدرسة أو جهة العمل"
                   class="w-full"
-                  @input="(e: Event) => newParticipant.org = toEnglishDigits((e.target as HTMLInputElement).value)"
+                  @update:model-value="(v: string | number | null | undefined) => newParticipant.org = toEnglishDigits(v)"
                 />
               </div>
             </div>

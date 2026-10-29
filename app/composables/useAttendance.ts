@@ -23,6 +23,19 @@ export function useAttendance() {
     }
   }
 
+  /** حذف متدرب مع كل سجلات حضوره */
+  function removeParticipant(id: string) {
+    const p = program.value
+    if (!p) return
+    p.participants = p.participants.filter(x => x.id !== id)
+    p.attendance = Object.fromEntries(
+      Object.entries(p.attendance).map(([key, sheet]) => [
+        key,
+        Object.fromEntries(Object.entries(sheet).filter(([pid]) => pid !== id))
+      ])
+    )
+  }
+
   function isPresent(day: number, session: number, id: string) {
     return program.value?.attendance[sessionKey(day, session)]?.[id] === true
   }
@@ -76,7 +89,7 @@ export function useAttendance() {
 
   return {
     program, totalSessions, report,
-    createProgram, isPresent, setPresent, setAll, markSaved, isSaved, presentCount,
+    createProgram, removeParticipant, isPresent, setPresent, setAll, markSaved, isSaved, presentCount,
     exportJson, importJson, reset
   }
 }

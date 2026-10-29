@@ -8,6 +8,20 @@ const name = ref('')
 const days = ref(1)
 const sessionsPerDay = ref(1)
 const participants = ref<Participant[]>([])
+const showAddParticipant = ref(false)
+const newParticipant = ref({ name: '', nationalId: '', org: '' })
+
+function addParticipant() {
+  if (!newParticipant.value.name.trim()) return
+  participants.value.push({
+    id: crypto.randomUUID(),
+    name: newParticipant.value.name.trim(),
+    nationalId: newParticipant.value.nationalId.trim(),
+    org: newParticipant.value.org.trim()
+  })
+  newParticipant.value = { name: '', nationalId: '', org: '' }
+  showAddParticipant.value = false
+}
 const fileName = ref('')
 const loading = ref(false)
 const confirmReplace = ref(false)
@@ -196,6 +210,13 @@ function start() {
                 size="xs"
                 @click="downloadTemplate"
               />
+              <UButton
+                label="إضافة يدوي"
+                icon="i-lucide-user-plus"
+                variant="link"
+                size="xs"
+                @click="showAddParticipant = true"
+              />
             </div>
             <label
               class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed p-3 transition hover:border-primary hover:bg-primary/5"
@@ -313,6 +334,44 @@ function start() {
             @click="start"
           />
         </div>
+
+        <UModal
+          v-model:open="showAddParticipant"
+          title="إضافة مشارك يدوياً"
+        >
+          <template #body>
+            <div class="space-y-3">
+              <UInput
+                v-model="newParticipant.name"
+                placeholder="الاسم"
+              />
+              <UInput
+                v-model="newParticipant.nationalId"
+                placeholder="رقم الهوية"
+              />
+              <UInput
+                v-model="newParticipant.org"
+                placeholder="المدرسة أو جهة العمل"
+              />
+            </div>
+          </template>
+          <template #footer>
+            <div class="flex w-full justify-end gap-2">
+              <UButton
+                label="إلغاء"
+                color="neutral"
+                variant="outline"
+                @click="showAddParticipant = false"
+              />
+              <UButton
+                label="إضافة"
+                icon="i-lucide-plus"
+                :disabled="!newParticipant.name.trim()"
+                @click="addParticipant"
+              />
+            </div>
+          </template>
+        </UModal>
       </template>
     </UModal>
   </div>

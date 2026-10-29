@@ -9,7 +9,7 @@ const links = [
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 border-b border-default bg-default/90 backdrop-blur">
+  <header class="sticky top-0 z-30 border-b border-default bg-default">
     <UContainer class="flex h-14 items-center gap-3">
       <img
         src="/img/logo.png"

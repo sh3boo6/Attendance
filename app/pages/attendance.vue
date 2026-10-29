@@ -166,44 +166,6 @@ function save() {
                 aria-label="مسح"
                 @click="search = ''"
               />
-
-              <UModal
-                v-model:open="showAddParticipant"
-                title="إضافة مشارك"
-              >
-                <template #body>
-                  <div class="space-y-3">
-                    <UInput
-                      v-model="newParticipant.name"
-                      placeholder="الاسم"
-                    />
-                    <UInput
-                      v-model="newParticipant.nationalId"
-                      placeholder="رقم الهوية"
-                    />
-                    <UInput
-                      v-model="newParticipant.org"
-                      placeholder="المدرسة أو جهة العمل"
-                    />
-                  </div>
-                </template>
-                <template #footer>
-                  <div class="flex w-full justify-end gap-2">
-                    <UButton
-                      label="إلغاء"
-                      color="neutral"
-                      variant="outline"
-                      @click="showAddParticipant = false"
-                    />
-                    <UButton
-                      label="إضافة"
-                      icon="i-lucide-plus"
-                      :disabled="!newParticipant.name.trim()"
-                      @click="addParticipant"
-                    />
-                  </div>
-                </template>
-              </UModal>
             </template>
           </UInput>
         </div>
@@ -272,5 +234,42 @@ function save() {
         @click="save"
       />
     </div>
+    <UModal
+      v-model:open="showAddParticipant"
+      title="إضافة مشارك"
+    >
+      <template #body>
+        <div class="space-y-3">
+          <UInput
+            v-model="newParticipant.name"
+            placeholder="الاسم"
+          />
+          <UInput
+            v-model="newParticipant.nationalId"
+            placeholder="رقم الهوية"
+          />
+          <UInput
+            v-model="newParticipant.org"
+            placeholder="المدرسة أو جهة العمل"
+          />
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <UButton
+            label="إلغاء"
+            color="neutral"
+            variant="outline"
+            @click="showAddParticipant = false"
+          />
+          <UButton
+            label="إضافة"
+            icon="i-lucide-plus"
+            :disabled="!newParticipant.name.trim()"
+            @click="addParticipant"
+          />
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>

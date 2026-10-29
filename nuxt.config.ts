@@ -22,6 +22,11 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   compatibilityDate: '2025-07-15',
 
+  vite: {
+    // تجهيز xlsx مسبقاً حتى لا يعيد Vite التحميل عند أول استيراد ديناميكي
+    optimizeDeps: { include: ['xlsx'] }
+  },
+
   eslint: {
     config: {
       stylistic: { commaDangle: 'never', braceStyle: '1tbs' }
@@ -52,9 +57,13 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/index.html',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}']
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+      // تحديث فوري: لا تبقى نسخة قديمة تشير إلى ملفات JS محذوفة بعد نشر جديد
+      cleanupOutdatedCaches: true,
+      clientsClaim: true,
+      skipWaiting: true
     },
     client: { installPrompt: true },
-    devOptions: { enabled: true, type: 'module' }
+    devOptions: { enabled: false }
   }
 })

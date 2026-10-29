@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/index.html',
+      navigateFallback: '/',
       globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
       // تحديث فوري: لا تبقى نسخة قديمة تشير إلى ملفات JS محذوفة بعد نشر جديد
       cleanupOutdatedCaches: true,

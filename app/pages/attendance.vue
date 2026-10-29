@@ -250,7 +250,7 @@ function save() {
               v-model="newParticipant.name"
               placeholder="الاسم"
               class="w-full"
-              @input="(e) => newParticipant.name = toEnglishDigits((e.target as HTMLInputElement).value)"
+              @input="(e: Event) => newParticipant.name = toEnglishDigits((e.target as HTMLInputElement).value)"
             />
           </div>
           <div>
@@ -259,7 +259,7 @@ function save() {
               v-model="newParticipant.nationalId"
               placeholder="رقم الهوية"
               class="w-full"
-              @input="(e) => newParticipant.nationalId = toEnglishDigits((e.target as HTMLInputElement).value)"
+              @input="(e: Event) => newParticipant.nationalId = toEnglishDigits((e.target as HTMLInputElement).value)"
             />
           </div>
           <div>
@@ -268,7 +268,7 @@ function save() {
               v-model="newParticipant.org"
               placeholder="المدرسة أو جهة العمل"
               class="w-full"
-              @input="(e) => newParticipant.org = toEnglishDigits((e.target as HTMLInputElement).value)"
+              @input="(e: Event) => newParticipant.org = toEnglishDigits((e.target as HTMLInputElement).value)"
             />
           </div>
         </div>

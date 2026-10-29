@@ -54,6 +54,8 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: '/',
       globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+      // صفحتا 200/404 تُرجعان خطأ 404 على Vercel، وفشل ملف واحد يُلغي تثبيت Service Worker كله
+      globIgnores: ['**/200.html', '**/404.html'],
       // تحديث فوري: لا تبقى نسخة قديمة تشير إلى ملفات JS محذوفة بعد نشر جديد
       cleanupOutdatedCaches: true,
       clientsClaim: true,

@@ -56,7 +56,7 @@ function save() {
 </script>
 
 <template>
-  <div v-if="program" class="space-y-4 pb-24 sm:pb-0">
+  <div v-if="program" class="space-y-4 pb-48 sm:pb-0">
     <UTabs v-model="day" :items="dayItems" :content="false" variant="pill" class="w-full" :ui="{ list: 'overflow-x-auto' }" />
     <UTabs v-model="session" :items="sessionItems" :content="false" color="neutral" variant="link" class="w-full" />
 
@@ -115,7 +115,7 @@ function save() {
       <TablePager v-model="pagination" :total="filtered.length" />
     </UCard>
 
-    <div class="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 border-t border-default bg-default/95 p-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
+    <div class="fixed inset-x-0 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-20 border-t border-default bg-default/95 p-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
       <UButton label="حفظ الجلسة" icon="i-lucide-save" size="xl" block @click="save" />
     </div>
   </div>

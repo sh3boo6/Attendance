@@ -37,7 +37,7 @@ async function install() {
     enter-active-class="transition duration-300" enter-from-class="translate-y-4 opacity-0"
     leave-active-class="transition duration-200" leave-to-class="translate-y-4 opacity-0"
   >
-    <div v-if="visible" class="fixed inset-x-3 bottom-20 z-40 mx-auto max-w-md sm:bottom-4 sm:start-4 sm:mx-0" role="dialog" aria-label="تثبيت التطبيق">
+    <div v-if="visible" class="fixed inset-x-3 bottom-28 z-40 mx-auto max-w-md sm:bottom-4 sm:start-4 sm:mx-0" role="dialog" aria-label="تثبيت التطبيق">
       <UCard :ui="{ body: 'p-4' }" class="shadow-lg">
         <div class="flex items-start gap-3">
           <img src="/img/logo.png" alt="" class="size-10 shrink-0">

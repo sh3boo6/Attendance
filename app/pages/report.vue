@@ -44,7 +44,7 @@ async function exportXlsx() {
 </script>
 
 <template>
-  <div v-if="program" class="space-y-4 pb-20 sm:pb-0">
+  <div v-if="program" class="space-y-4 pb-28 sm:pb-0">
     <div class="grid grid-cols-3 gap-3">
       <UCard :ui="{ body: 'p-3 sm:p-4 text-center' }">
         <div class="text-2xl font-bold">{{ report.length }}</div>

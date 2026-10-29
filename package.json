@@ -8,7 +8,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "nuxt typecheck",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.149",
@@ -22,7 +25,10 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.17.0",
-    "eslint": "^10.9.0"
+    "eslint": "^10.9.0",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
   },
   "packageManager": "pnpm@11.5.2"
 }

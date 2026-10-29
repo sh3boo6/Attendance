@@ -1,4 +1,4 @@
-import { STORAGE_KEY, isValidProgram } from '~/composables/useAttendance'
+import { STORAGE_KEY } from '~/composables/useAttendance'
 import type { Program } from '~/types'
 
 // تحميل البيانات من LocalStorage ثم حفظ تلقائي عند أي تغيير

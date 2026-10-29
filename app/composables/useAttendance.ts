@@ -1,25 +1,12 @@
 import type { Participant, Program, ReportRow } from '~/types'
 
 export const STORAGE_KEY = 'attendance:program:v1'
-export const PASS_PERCENT = 80
 
 const DAY_NAMES = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس']
 const SESSION_NAMES = ['الأولى', 'الثانية', 'الثالثة']
 
 export const dayLabel = (day: number) => `اليوم ${DAY_NAMES[day - 1]}`
 export const sessionLabel = (session: number) => `الجلسة ${SESSION_NAMES[session - 1]}`
-export const sessionKey = (day: number, session: number) => `${day}-${session}`
-
-export function isValidProgram(data: unknown): data is Program {
-  const p = data as Program
-  return !!p
-    && typeof p.name === 'string'
-    && Number.isInteger(p.days) && p.days >= 1 && p.days <= 5
-    && Number.isInteger(p.sessionsPerDay) && p.sessionsPerDay >= 1 && p.sessionsPerDay <= 3
-    && Array.isArray(p.participants)
-    && p.participants.every(x => x && typeof x.id === 'string' && typeof x.name === 'string')
-    && typeof p.attendance === 'object' && p.attendance !== null
-}
 
 export function useAttendance() {
   const program = useState<Program | null>('program', () => null)
@@ -67,21 +54,7 @@ export function useAttendance() {
     return Object.values(sheet).filter(Boolean).length
   }
 
-  const report = computed<ReportRow[]>(() => {
-    const p = program.value
-    if (!p) return []
-    const total = totalSessions.value
-    return p.participants.map((participant) => {
-      let attended = 0
-      for (let d = 1; d <= p.days; d++) {
-        for (let s = 1; s <= p.sessionsPerDay; s++) {
-          if (p.attendance[sessionKey(d, s)]?.[participant.id]) attended++
-        }
-      }
-      const percent = total ? (attended / total) * 100 : 0
-      return { participant, attended, total, percent, eligible: percent >= PASS_PERCENT }
-    })
-  })
+  const report = computed<ReportRow[]>(() => program.value ? buildReport(program.value) : [])
 
   const exportJson = () => {
     if (!program.value) return

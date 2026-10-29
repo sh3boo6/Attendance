@@ -11,6 +11,10 @@ const participants = ref<Participant[]>([])
 const showAddParticipant = ref(false)
 const newParticipant = ref({ name: '', nationalId: '', org: '' })
 
+function toEnglishDigits(value: string) {
+  return value.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+}
+
 function addParticipant() {
   if (!newParticipant.value.name.trim()) return
   participants.value.push({
@@ -341,18 +345,33 @@ function start() {
         >
           <template #body>
             <div class="space-y-3">
-              <UInput
-                v-model="newParticipant.name"
-                placeholder="الاسم"
-              />
-              <UInput
-                v-model="newParticipant.nationalId"
-                placeholder="رقم الهوية"
-              />
-              <UInput
-                v-model="newParticipant.org"
-                placeholder="المدرسة أو جهة العمل"
-              />
+              <div>
+                <label class="mb-1 block text-sm font-medium">الاسم</label>
+                <UInput
+                  v-model="newParticipant.name"
+                  placeholder="الاسم"
+                  class="w-full"
+                  @input="newParticipant.name = toEnglishDigits(newParticipant.name)"
+                />
+              </div>
+              <div>
+                <label class="mb-1 block text-sm font-medium">رقم الهوية</label>
+                <UInput
+                  v-model="newParticipant.nationalId"
+                  placeholder="رقم الهوية"
+                  class="w-full"
+                  @input="newParticipant.nationalId = toEnglishDigits(newParticipant.nationalId)"
+                />
+              </div>
+              <div>
+                <label class="mb-1 block text-sm font-medium">المدرسة أو جهة العمل</label>
+                <UInput
+                  v-model="newParticipant.org"
+                  placeholder="المدرسة أو جهة العمل"
+                  class="w-full"
+                  @input="newParticipant.org = toEnglishDigits(newParticipant.org)"
+                />
+              </div>
             </div>
           </template>
           <template #footer>

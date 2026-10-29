@@ -26,20 +26,5 @@ const links = [
       <DataMenu v-if="program" />
       <ThemeToggle />
     </UContainer>
-
-    <!-- تنقل سفلي للهاتف -->
-    <nav
-      v-if="program"
-      class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 border-t border-default bg-default pb-[env(safe-area-inset-bottom)] sm:hidden"
-    >
-      <NuxtLink
-        v-for="l in links" :key="l.to" :to="l.to"
-        class="flex flex-col items-center gap-0.5 py-2 text-xs"
-        :class="route.path === l.to ? 'font-bold text-primary' : 'text-muted'"
-      >
-        <UIcon :name="l.icon" class="size-5" />
-        {{ l.label }}
-      </NuxtLink>
-    </nav>
   </header>
 </template>

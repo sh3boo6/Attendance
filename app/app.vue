@@ -10,6 +10,7 @@ import { ar } from '@nuxt/ui/locale'
       <NuxtPage />
     </UContainer>
     <AppFooter />
+    <MobileNav />
     <InstallPrompt />
   </UApp>
 </template>

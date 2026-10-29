@@ -22,11 +22,6 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   compatibilityDate: '2025-07-15',
 
-  vite: {
-    // تجهيز xlsx مسبقاً حتى لا يعيد Vite التحميل عند أول استيراد ديناميكي
-    optimizeDeps: { include: ['xlsx'] }
-  },
-
   eslint: {
     config: {
       stylistic: { commaDangle: 'never', braceStyle: '1tbs' }

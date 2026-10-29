@@ -1,13 +1,5 @@
+import * as XLSX from 'xlsx'
 import type { Participant, ReportRow } from '~/types'
-
-/** تحميل مكتبة Excel عند الحاجة، مع رسالة مفهومة إن تعذّر تحميل ملفها (مثلاً بعد تحديث التطبيق) */
-async function loadXlsx() {
-  try {
-    return await import('xlsx')
-  } catch {
-    throw new Error('تعذّر تحميل أداة Excel. أعد تحميل الصفحة وحاول مرة أخرى.')
-  }
-}
 
 const normalize = (s: unknown) =>
   String(s ?? '').replace(/[ً-ْـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/\s+/g, '').trim()
@@ -19,7 +11,6 @@ function findColumn(headers: string[], patterns: string[], fallback: number) {
 
 /** قراءة ملف Excel بأعمدة: الاسم، رقم الهوية، المدرسة أو جهة العمل */
 export async function parseParticipants(file: File): Promise<Participant[]> {
-  const XLSX = await loadXlsx()
   const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' })
   const sheet = wb.Sheets[wb.SheetNames[0]!]
   if (!sheet) throw new Error('الملف لا يحتوي على أي ورقة')
@@ -45,7 +36,6 @@ export async function parseParticipants(file: File): Promise<Participant[]> {
 }
 
 export async function downloadTemplate() {
-  const XLSX = await loadXlsx()
   const ws = XLSX.utils.aoa_to_sheet([
     ['الاسم', 'رقم الهوية', 'المدرسة أو جهة العمل'],
     ['مثال: محمد أحمد', '1234567890', 'مدرسة النموذج']
@@ -59,7 +49,6 @@ export async function downloadTemplate() {
 
 /** تصدير المستحقين للشهادة فقط */
 export async function exportEligible(programName: string, rows: ReportRow[]) {
-  const XLSX = await loadXlsx()
   const data = rows.filter(r => r.eligible).map((r, i) => ({
     'م': i + 1,
     'الاسم': r.participant.name,

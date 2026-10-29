@@ -10,9 +10,15 @@ const day = ref('1')
 const session = ref('1')
 const search = ref('')
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
-watch(search, () => { pagination.value.pageIndex = 0 })
-watch(day, () => { session.value = '1' })
-watch([day, session], () => { pagination.value.pageIndex = 0 })
+watch(search, () => {
+  pagination.value.pageIndex = 0
+})
+watch(day, () => {
+  session.value = '1'
+})
+watch([day, session], () => {
+  pagination.value.pageIndex = 0
+})
 
 const hideSm = { class: { th: 'hidden sm:table-cell', td: 'hidden sm:table-cell tabular-nums' } }
 const hideMd = { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } }
@@ -56,29 +62,88 @@ function save() {
 </script>
 
 <template>
-  <div v-if="program" class="space-y-4 pb-48 sm:pb-0">
-    <UTabs v-model="day" :items="dayItems" :content="false" variant="pill" class="w-full" :ui="{ list: 'overflow-x-auto' }" />
-    <UTabs v-model="session" :items="sessionItems" :content="false" color="neutral" variant="link" class="w-full" />
+  <div
+    v-if="program"
+    class="space-y-4 pb-64 sm:pb-0"
+  >
+    <UTabs
+      v-model="day"
+      :items="dayItems"
+      :content="false"
+      variant="pill"
+      class="w-full"
+      :ui="{ list: 'overflow-x-auto' }"
+    />
+    <UTabs
+      v-model="session"
+      :items="sessionItems"
+      :content="false"
+      color="neutral"
+      variant="link"
+      class="w-full"
+    />
 
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <div class="space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <UBadge color="success" variant="subtle" :label="`حاضر ${present}`" />
-              <UBadge color="error" variant="subtle" :label="`غائب ${total - present}`" />
-              <UBadge v-if="isSaved(d, s)" color="primary" variant="soft" icon="i-lucide-check" label="محفوظة" />
+              <UBadge
+                color="success"
+                variant="subtle"
+                :label="`حاضر ${present}`"
+              />
+              <UBadge
+                color="error"
+                variant="subtle"
+                :label="`غائب ${total - present}`"
+              />
+              <UBadge
+                v-if="isSaved(d, s)"
+                color="primary"
+                variant="soft"
+                icon="i-lucide-check"
+                label="محفوظة"
+              />
             </div>
             <div class="flex gap-2">
-              <UButton size="xs" color="neutral" variant="outline" label="تحضير الكل" icon="i-lucide-check-check"
-                @click="setAll(d, s, program.participants.map(p => p.id), true)" />
-              <UButton size="xs" color="neutral" variant="outline" label="تصفير" icon="i-lucide-rotate-ccw"
-                @click="setAll(d, s, program.participants.map(p => p.id), false)" />
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="outline"
+                label="تحضير الكل"
+                icon="i-lucide-check-check"
+                @click="setAll(d, s, program.participants.map(p => p.id), true)"
+              />
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="outline"
+                label="تصفير"
+                icon="i-lucide-rotate-ccw"
+                @click="setAll(d, s, program.participants.map(p => p.id), false)"
+              />
             </div>
           </div>
-          <UInput v-model="search" icon="i-lucide-search" placeholder="بحث بالاسم أو رقم الهوية…" class="w-full" :ui="{ trailing: 'pe-1' }">
-            <template v-if="search" #trailing>
-              <UButton icon="i-lucide-x" color="neutral" variant="link" size="sm" aria-label="مسح" @click="search = ''" />
+          <UInput
+            v-model="search"
+            icon="i-lucide-search"
+            placeholder="بحث بالاسم أو رقم الهوية…"
+            class="w-full"
+            :ui="{ trailing: 'pe-1' }"
+          >
+            <template
+              v-if="search"
+              #trailing
+            >
+              <UButton
+                icon="i-lucide-x"
+                color="neutral"
+                variant="link"
+                size="sm"
+                aria-label="مسح"
+                @click="search = ''"
+              />
             </template>
           </UInput>
         </div>
@@ -93,30 +158,59 @@ function save() {
         class="w-full"
       >
         <template #name-cell="{ row }">
-          <div class="font-medium">{{ row.original.name }}</div>
+          <div class="font-medium">
+            {{ row.original.name }}
+          </div>
           <div class="text-xs text-muted md:hidden">
             <span class="sm:hidden">{{ row.original.nationalId }} · </span>{{ row.original.org }}
           </div>
         </template>
         <template #status-cell="{ row }">
-          <div class="inline-flex gap-1" role="radiogroup" :aria-label="`حضور ${row.original.name}`">
-            <UButton size="sm" label="حاضر" role="radio" :aria-checked="isPresent(d, s, row.original.id)"
-              :color="isPresent(d, s, row.original.id) ? 'success' : 'neutral'" :variant="isPresent(d, s, row.original.id) ? 'solid' : 'outline'"
-              @click="setPresent(d, s, row.original.id, true)" />
-            <UButton size="sm" label="غائب" role="radio" :aria-checked="!isPresent(d, s, row.original.id)"
-              :color="!isPresent(d, s, row.original.id) ? 'error' : 'neutral'" :variant="!isPresent(d, s, row.original.id) ? 'solid' : 'outline'"
-              @click="setPresent(d, s, row.original.id, false)" />
+          <div
+            class="inline-flex gap-1"
+            role="radiogroup"
+            :aria-label="`حضور ${row.original.name}`"
+          >
+            <UButton
+              size="sm"
+              label="حاضر"
+              role="radio"
+              :aria-checked="isPresent(d, s, row.original.id)"
+              :color="isPresent(d, s, row.original.id) ? 'success' : 'neutral'"
+              :variant="isPresent(d, s, row.original.id) ? 'solid' : 'outline'"
+              @click="setPresent(d, s, row.original.id, true)"
+            />
+            <UButton
+              size="sm"
+              label="غائب"
+              role="radio"
+              :aria-checked="!isPresent(d, s, row.original.id)"
+              :color="!isPresent(d, s, row.original.id) ? 'error' : 'neutral'"
+              :variant="!isPresent(d, s, row.original.id) ? 'solid' : 'outline'"
+              @click="setPresent(d, s, row.original.id, false)"
+            />
           </div>
         </template>
         <template #empty>
-          <p class="py-6 text-center text-muted">لا توجد نتائج مطابقة</p>
+          <p class="py-6 text-center text-muted">
+            لا توجد نتائج مطابقة
+          </p>
         </template>
       </UTable>
-      <TablePager v-model="pagination" :total="filtered.length" />
+      <TablePager
+        v-model="pagination"
+        :total="filtered.length"
+      />
     </UCard>
 
-    <div class="fixed inset-x-0 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-20 border-t border-default bg-default/95 p-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
-      <UButton label="حفظ الجلسة" icon="i-lucide-save" size="xl" block @click="save" />
+    <div class="fixed inset-x-0 bottom-[calc(7.5rem+env(safe-area-inset-bottom))] z-20 border-t border-default bg-default/95 p-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
+      <UButton
+        label="حفظ الجلسة"
+        icon="i-lucide-save"
+        size="xl"
+        block
+        @click="save"
+      />
     </div>
   </div>
 </template>

@@ -7,7 +7,7 @@ dist
 *.log
 .DS_Store
 
-# محلي: أدوات الوكلاء وملفات مدير الحزم الآخر
+# محلي: أدوات الوكلاء
 .claude
 .codex
 .cursor
@@ -16,5 +16,3 @@ dist
 AGENTS.md
 CLAUDE.md
 GEMINI.md
-pnpm-lock.yaml
-pnpm-workspace.yaml

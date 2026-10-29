@@ -1,10 +1,8 @@
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@vite-pwa/nuxt'],
   ssr: false,
   devtools: { enabled: false },
-
-  modules: ['@nuxt/ui', '@vite-pwa/nuxt'],
-  css: ['~/assets/css/main.css'],
 
   app: {
     head: {
@@ -12,13 +10,21 @@ export default defineNuxtConfig({
       title: 'نظام التحضير',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
-        
+
         { name: 'description', content: 'تطبيق تحضير المشاركين وإصدار تقرير استحقاق الشهادات' }
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/img/logo.png' },
         { rel: 'apple-touch-icon', href: '/icon-192.png' }
       ]
+    }
+  },
+  css: ['~/assets/css/main.css'],
+  compatibilityDate: '2025-07-15',
+
+  eslint: {
+    config: {
+      stylistic: { commaDangle: 'never', braceStyle: '1tbs' }
     }
   },
 
@@ -49,6 +55,6 @@ export default defineNuxtConfig({
       globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}']
     },
     client: { installPrompt: true },
-    devOptions: { enabled: true, type: "module" }
+    devOptions: { enabled: true, type: 'module' }
   }
 })

@@ -6,16 +6,14 @@ export default defineNuxtPlugin(() => {
   const program = useState<Program | null>('program', () => null)
 
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const data = JSON.parse(raw)
-      if (isValidProgram(data)) program.value = data
-    }
-  } catch {}
+    const raw = safeStorage.get(STORAGE_KEY)
+    const data = raw ? JSON.parse(raw) : null
+    if (isValidProgram(data)) program.value = data
+  } catch {
+    // JSON تالف: نبدأ ببيانات فارغة
+  }
 
   watch(program, (value) => {
-    try {
-      if (value) localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
-    } catch {}
+    if (value) safeStorage.set(STORAGE_KEY, JSON.stringify(value))
   }, { deep: true })
 })

@@ -17,9 +17,19 @@ const pageSize = computed({
 <template>
   <div class="flex flex-col items-center justify-between gap-3 border-t border-default p-3 sm:flex-row">
     <div class="flex items-center gap-2 text-sm text-muted">
-      <USelect v-model="pageSize" :items="sizes" size="sm" class="w-32" />
+      <USelect
+        v-model="pageSize"
+        :items="sizes"
+        size="sm"
+        class="w-32"
+      />
       <span>الإجمالي: {{ props.total }}</span>
     </div>
-    <UPagination v-model:page="page" :items-per-page="pagination.pageSize" :total="props.total" size="sm" />
+    <UPagination
+      v-model:page="page"
+      :items-per-page="pagination.pageSize"
+      :total="props.total"
+      size="sm"
+    />
   </div>
 </template>

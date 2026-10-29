@@ -91,14 +91,14 @@ export function useAttendance() {
 
   async function importJson(file: File) {
     const data = JSON.parse(await file.text())
-    if (!isValidProgram(data)) throw new Error('ملف JSON غير صالح')
+    if (!isValidProgram(data)) throw new Error('الملف غير صالح، اختر ملفاً محفوظاً من التطبيق')
     data.savedSessions = Array.isArray(data.savedSessions) ? data.savedSessions : []
     program.value = data
   }
 
   function reset() {
     program.value = null
-    try { localStorage.removeItem(STORAGE_KEY) } catch {}
+    safeStorage.remove(STORAGE_KEY)
   }
 
   return {

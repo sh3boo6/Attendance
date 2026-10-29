@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Participant } from '~/types'
 
-const { program, createProgram, importJson } = useAttendance()
+const { program, createProgram } = useAttendance()
 const toast = useToast()
 
 const name = ref('')
@@ -11,7 +11,6 @@ const participants = ref<Participant[]>([])
 const fileName = ref('')
 const loading = ref(false)
 const confirmReplace = ref(false)
-const jsonInput = ref<HTMLInputElement>()
 
 async function onExcel(e: Event) {
   const input = e.target as HTMLInputElement
@@ -31,20 +30,6 @@ async function onExcel(e: Event) {
     toast.add({ title: 'تعذرت قراءة الملف', description: (err as Error).message, color: 'error' })
   } finally {
     loading.value = false
-  }
-}
-
-async function onJson(e: Event) {
-  const input = e.target as HTMLInputElement
-  const file = input.files?.[0]
-  input.value = ''
-  if (!file) return
-  try {
-    await importJson(file)
-    toast.add({ title: 'تم استرجاع الجلسة', color: 'success' })
-    navigateTo('/attendance')
-  } catch (err) {
-    toast.add({ title: 'تعذر الاستيراد', description: (err as Error).message, color: 'error' })
   }
 }
 
@@ -74,9 +59,15 @@ function start() {
       <div class="pointer-events-none absolute -start-16 -top-16 size-56 rounded-full bg-white/10" />
       <div class="pointer-events-none absolute -bottom-20 end-10 size-48 rounded-full bg-white/10" />
       <div class="relative flex items-center gap-4 sm:gap-6">
-        <img src="/img/logo.png" alt="" class="size-16 shrink-0 rounded-2xl bg-white/95 p-2 shadow-md sm:size-24">
+        <img
+          src="/img/logo.png"
+          alt=""
+          class="size-16 shrink-0 rounded-2xl bg-white/95 p-2 shadow-md sm:size-24"
+        >
         <div>
-          <h2 class="text-2xl font-bold sm:text-4xl">نظام التحضير</h2>
+          <h2 class="text-2xl font-bold sm:text-4xl">
+            نظام التحضير
+          </h2>
           <p class="mt-1 text-sm text-white/85 sm:text-base">
             حضّر المشاركين لكل جلسة، واحصل على تقرير الاستحقاق وقائمة الشهادات بضغطة واحدة.
           </p>
@@ -86,125 +77,241 @@ function start() {
 
     <div class="grid gap-6 lg:grid-cols-3">
       <!-- النموذج -->
-      <form class="space-y-5 lg:col-span-2" @submit.prevent="start">
-        <!-- 1 -->
-        <UCard>
-          <div class="mb-4 flex items-center gap-3">
-            <span class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">1</span>
-            <h3 class="font-bold">بيانات البرنامج</h3>
-          </div>
-          <UFormField label="اسم البرنامج التدريبي" required>
-            <UInput v-model="name" icon="i-lucide-graduation-cap" placeholder="مثال: دورة مهارات التدريس الفعّال" size="xl" class="w-full" />
-          </UFormField>
-        </UCard>
-
-        <!-- 2 -->
-        <UCard>
-          <div class="mb-4 flex items-center gap-3">
-            <span class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">2</span>
-            <h3 class="font-bold">مدة البرنامج</h3>
-          </div>
-          <div class="grid gap-6 sm:grid-cols-2">
-            <UFormField label="عدد أيام البرنامج">
-              <div class="grid grid-cols-5 gap-2" role="radiogroup">
-                <button
-                  v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="days === n"
-                  class="h-12 rounded-xl border-2 text-lg font-bold transition active:scale-95"
-                  :class="days === n ? 'border-primary bg-primary text-white shadow' : 'border-default hover:border-primary/60'"
-                  @click="days = n"
-                >{{ n }}</button>
-              </div>
-            </UFormField>
-            <UFormField label="عدد الجلسات اليومية">
-              <div class="grid grid-cols-3 gap-2" role="radiogroup">
-                <button
-                  v-for="n in 3" :key="n" type="button" role="radio" :aria-checked="sessionsPerDay === n"
-                  class="h-12 rounded-xl border-2 text-lg font-bold transition active:scale-95"
-                  :class="sessionsPerDay === n ? 'border-primary bg-primary text-white shadow' : 'border-default hover:border-primary/60'"
-                  @click="sessionsPerDay = n"
-                >{{ n }}</button>
-              </div>
-            </UFormField>
-          </div>
-        </UCard>
-
-        <!-- 3 -->
-        <UCard>
-          <div class="mb-4 flex items-center gap-3">
-            <span class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">3</span>
-            <h3 class="font-bold">قائمة المشاركين</h3>
-          </div>
-          <label
-            class="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed p-8 text-center transition hover:border-primary hover:bg-primary/5"
-            :class="participants.length ? 'border-success bg-success/5' : 'border-accented'"
+      <form
+        class="space-y-4 lg:col-span-2"
+        @submit.prevent="start"
+      >
+        <div class="grid gap-4 sm:grid-cols-2">
+          <!-- اسم البرنامج -->
+          <UCard
+            class="h-full"
+            :ui="{ body: 'p-4 sm:p-4' }"
           >
-            <span class="flex size-14 items-center justify-center rounded-full" :class="participants.length ? 'bg-success/15 text-success' : 'bg-primary/10 text-primary'">
+            <div class="mb-3 flex items-center gap-2">
               <UIcon
-                :name="loading ? 'i-lucide-loader-circle' : participants.length ? 'i-lucide-file-check-2' : 'i-lucide-file-spreadsheet'"
-                class="size-7" :class="{ 'animate-spin': loading }"
+                name="i-lucide-graduation-cap"
+                class="size-5 text-primary"
               />
-            </span>
-            <span class="font-semibold">{{ fileName || 'اضغط لاختيار ملف Excel' }}</span>
-            <span class="text-xs text-muted">
-              {{ participants.length ? `تم تحميل ${participants.length} مشارك · اضغط لتغيير الملف` : 'xlsx / xls / csv' }}
-            </span>
-            <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onExcel">
-          </label>
-          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
-            <span>الأعمدة: <b>الاسم</b> · <b>رقم الهوية</b> · <b>المدرسة أو جهة العمل</b></span>
-            <UButton label="تنزيل نموذج Excel" icon="i-lucide-download" variant="link" size="xs" @click="downloadTemplate" />
-          </div>
-        </UCard>
+              <h3 class="font-bold">
+                اسم البرنامج
+              </h3>
+            </div>
+            <UFormField required>
+              <UInput
+                v-model="name"
+                placeholder="مثال: دورة مهارات التدريس"
+                size="lg"
+                class="w-full"
+              />
+            </UFormField>
+          </UCard>
 
-        <UButton type="submit" label="بدء التحضير" icon="i-lucide-play" size="xl" block :disabled="!canStart" class="h-14 text-lg" />
+          <!-- المدة -->
+          <UCard
+            class="h-full"
+            :ui="{ body: 'p-4 sm:p-4' }"
+          >
+            <div class="mb-3 flex items-center gap-2">
+              <UIcon
+                name="i-lucide-calendar-days"
+                class="size-5 text-primary"
+              />
+              <h3 class="font-bold">
+                مدة البرنامج (أيام)
+              </h3>
+            </div>
+            <div
+              class="grid grid-cols-5 gap-2"
+              role="radiogroup"
+              aria-label="عدد أيام البرنامج"
+            >
+              <button
+                v-for="n in 5"
+                :key="n"
+                type="button"
+                role="radio"
+                :aria-checked="days === n"
+                class="h-11 rounded-xl border-2 text-lg font-bold transition active:scale-95"
+                :class="days === n ? 'border-primary bg-primary text-white shadow' : 'border-default hover:border-primary/60'"
+                @click="days = n"
+              >
+                {{ n }}
+              </button>
+            </div>
+          </UCard>
+
+          <!-- الجلسات -->
+          <UCard
+            class="h-full"
+            :ui="{ body: 'p-4 sm:p-4' }"
+          >
+            <div class="mb-3 flex items-center gap-2">
+              <UIcon
+                name="i-lucide-layers"
+                class="size-5 text-primary"
+              />
+              <h3 class="font-bold">
+                الجلسات اليومية
+              </h3>
+            </div>
+            <div
+              class="grid grid-cols-3 gap-2"
+              role="radiogroup"
+              aria-label="عدد الجلسات اليومية"
+            >
+              <button
+                v-for="n in 3"
+                :key="n"
+                type="button"
+                role="radio"
+                :aria-checked="sessionsPerDay === n"
+                class="h-11 rounded-xl border-2 text-lg font-bold transition active:scale-95"
+                :class="sessionsPerDay === n ? 'border-primary bg-primary text-white shadow' : 'border-default hover:border-primary/60'"
+                @click="sessionsPerDay = n"
+              >
+                {{ n }}
+              </button>
+            </div>
+          </UCard>
+
+          <!-- رفع المشاركين -->
+          <UCard
+            class="h-full"
+            :ui="{ body: 'p-4 sm:p-4' }"
+          >
+            <div class="mb-3 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-users"
+                  class="size-5 text-primary"
+                />
+                <h3 class="font-bold">
+                  المشاركون
+                </h3>
+              </div>
+              <UButton
+                label="نموذج Excel"
+                icon="i-lucide-download"
+                variant="link"
+                size="xs"
+                @click="downloadTemplate"
+              />
+            </div>
+            <label
+              class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed p-3 transition hover:border-primary hover:bg-primary/5"
+              :class="participants.length ? 'border-success bg-success/5' : 'border-accented'"
+            >
+              <span
+                class="flex size-10 shrink-0 items-center justify-center rounded-full"
+                :class="participants.length ? 'bg-success/15 text-success' : 'bg-primary/10 text-primary'"
+              >
+                <UIcon
+                  :name="loading ? 'i-lucide-loader-circle' : participants.length ? 'i-lucide-file-check-2' : 'i-lucide-file-spreadsheet'"
+                  class="size-5"
+                  :class="{ 'animate-spin': loading }"
+                />
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate text-sm font-semibold">{{ fileName || 'اختر ملف Excel' }}</span>
+                <span class="block text-xs text-muted">
+                  {{ participants.length ? `${participants.length} مشارك · اضغط للتغيير` : 'الاسم · رقم الهوية · الجهة' }}
+                </span>
+              </span>
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                class="hidden"
+                @change="onExcel"
+              >
+            </label>
+          </UCard>
+        </div>
+
+        <UButton
+          type="submit"
+          label="بدء التحضير"
+          icon="i-lucide-play"
+          size="xl"
+          block
+          :disabled="!canStart"
+          class="h-14 text-lg"
+        />
       </form>
 
       <!-- الجانب -->
-      <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start">
-        <UCard>
-          <h3 class="mb-3 font-bold">ملخص البرنامج</h3>
+      <aside>
+        <UCard
+          class="h-full"
+          :ui="{ root: 'h-full', body: 'flex h-full flex-col' }"
+        >
+          <h3 class="mb-3 font-bold">
+            ملخص البرنامج
+          </h3>
           <dl class="space-y-3 text-sm">
             <div class="flex items-center justify-between gap-2">
-              <dt class="text-muted">الاسم</dt>
-              <dd class="truncate font-semibold">{{ name || '—' }}</dd>
+              <dt class="text-muted">
+                الاسم
+              </dt>
+              <dd class="truncate font-semibold">
+                {{ name || '—' }}
+              </dd>
             </div>
             <div class="flex items-center justify-between">
-              <dt class="text-muted">الأيام</dt><dd class="font-semibold">{{ days }}</dd>
+              <dt class="text-muted">
+                الأيام
+              </dt><dd class="font-semibold">
+                {{ days }}
+              </dd>
             </div>
             <div class="flex items-center justify-between">
-              <dt class="text-muted">الجلسات يومياً</dt><dd class="font-semibold">{{ sessionsPerDay }}</dd>
+              <dt class="text-muted">
+                الجلسات يومياً
+              </dt><dd class="font-semibold">
+                {{ sessionsPerDay }}
+              </dd>
             </div>
             <div class="flex items-center justify-between">
-              <dt class="text-muted">إجمالي الجلسات</dt><dd class="font-bold text-primary">{{ days * sessionsPerDay }}</dd>
+              <dt class="text-muted">
+                إجمالي الجلسات
+              </dt><dd class="font-bold text-primary">
+                {{ days * sessionsPerDay }}
+              </dd>
             </div>
             <div class="flex items-center justify-between">
-              <dt class="text-muted">المشاركون</dt><dd class="font-semibold">{{ participants.length }}</dd>
+              <dt class="text-muted">
+                المشاركون
+              </dt><dd class="font-semibold">
+                {{ participants.length }}
+              </dd>
             </div>
           </dl>
-          <p class="mt-4 rounded-lg bg-primary/10 p-3 text-xs text-primary">
-            يستحق المشارك الشهادة عند حضور ٪{{ PASS_PERCENT }} أو أكثر من إجمالي الجلسات.
-          </p>
-        </UCard>
-
-        <UCard>
-          <div class="flex items-start gap-3">
-            <UIcon name="i-lucide-history" class="mt-0.5 size-5 shrink-0 text-primary" />
-            <div class="min-w-0 flex-1">
-              <p class="font-semibold">لديك نسخة سابقة؟</p>
-              <p class="mb-3 text-sm text-muted">استعد جلسة عمل سابقة من ملف JSON.</p>
-              <UButton label="استيراد ملف JSON" icon="i-lucide-upload" color="neutral" variant="outline" size="sm" @click="jsonInput?.click()" />
-              <input ref="jsonInput" type="file" accept="application/json,.json" class="hidden" @change="onJson">
-            </div>
+          <div class="mt-auto pt-5">
+            <p class="rounded-lg bg-primary/10 p-3 text-xs text-primary">
+              يستحق المشارك الشهادة عند حضور ٪{{ PASS_PERCENT }} أو أكثر من إجمالي الجلسات.
+            </p>
           </div>
         </UCard>
       </aside>
     </div>
 
-    <UModal v-model:open="confirmReplace" title="استبدال البرنامج الحالي؟" description="يوجد برنامج محفوظ حالياً. إنشاء برنامج جديد سيحذف بياناته وحضوره.">
+    <UModal
+      v-model:open="confirmReplace"
+      title="استبدال البرنامج الحالي؟"
+      description="يوجد برنامج محفوظ حالياً. إنشاء برنامج جديد سيحذف بياناته وحضوره."
+    >
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <UButton label="إلغاء" color="neutral" variant="outline" @click="confirmReplace = false" />
-          <UButton label="استبدال وبدء" color="error" @click="start" />
+          <UButton
+            label="إلغاء"
+            color="neutral"
+            variant="outline"
+            @click="confirmReplace = false"
+          />
+          <UButton
+            label="استبدال وبدء"
+            color="error"
+            @click="start"
+          />
         </div>
       </template>
     </UModal>

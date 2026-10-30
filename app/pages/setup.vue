@@ -4,6 +4,13 @@ import type { Participant } from '~/types'
 const { program, createProgram } = useAttendance()
 const toast = useToast()
 
+definePageMeta({
+  pageTransition: {
+    name: 'slide-right',
+    mode: 'out-in'
+  }
+})
+
 const name = ref('')
 const days = ref(1)
 const sessionsPerDay = ref(1)

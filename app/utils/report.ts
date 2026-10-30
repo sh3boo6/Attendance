@@ -30,3 +30,17 @@ export function buildReport(p: Program): ReportRow[] {
     return { participant, attended, total, percent, eligible: percent >= PASS_PERCENT }
   })
 }
+
+const INVALID_FILE = 'الملف غير صالح، اختر ملفاً محفوظاً من التطبيق'
+
+/** قراءة محتوى ملف محفوظ والتحقق منه، دون تطبيقه على البرنامج الحالي */
+export function parseProgramJson(text: string): Program {
+  let data: unknown
+  try {
+    data = JSON.parse(text)
+  } catch {
+    throw new Error(INVALID_FILE)
+  }
+  if (!isValidProgram(data)) throw new Error(INVALID_FILE)
+  return { ...data, savedSessions: Array.isArray(data.savedSessions) ? data.savedSessions : [] }
+}

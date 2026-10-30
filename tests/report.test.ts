@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PASS_PERCENT, buildReport, isValidProgram, sessionKey } from '../app/utils/report'
+import { PASS_PERCENT, buildReport, isValidProgram, parseProgramJson, sessionKey } from '../app/utils/report'
 import type { Program } from '../app/types'
 
 function makeProgram(days: number, sessionsPerDay: number, present: Record<string, string[]>): Program {
@@ -54,5 +54,20 @@ describe('isValidProgram', () => {
     expect(isValidProgram({ ...makeProgram(2, 2, {}), days: 6 })).toBe(false)
     expect(isValidProgram({ ...makeProgram(2, 2, {}), sessionsPerDay: 0 })).toBe(false)
     expect(isValidProgram({ ...makeProgram(2, 2, {}), participants: 'x' })).toBe(false)
+  })
+})
+
+describe('parseProgramJson', () => {
+  it('parses a saved program and defaults savedSessions', () => {
+    const saved = makeProgram(2, 2, {}) as Partial<Program>
+    delete saved.savedSessions
+    const parsed = parseProgramJson(JSON.stringify(saved))
+    expect(parsed.name).toBe('test')
+    expect(parsed.savedSessions).toEqual([])
+  })
+
+  it('throws a friendly error for invalid JSON or wrong shape', () => {
+    expect(() => parseProgramJson('not json')).toThrow('الملف غير صالح')
+    expect(() => parseProgramJson('{"a":1}')).toThrow('الملف غير صالح')
   })
 })

@@ -1,11 +1,19 @@
 <script setup lang="ts">
-const { exportJson, importJson, reset } = useAttendance()
+import type { Program } from '~/types'
+
+const { program, exportJson, readProgramFile, openProgram, reset } = useAttendance()
 const toast = useToast()
 const fileInput = ref<HTMLInputElement>()
 const confirmReset = ref(false)
 const confirmNew = ref(false)
-
-const { program } = useAttendance()
+// برنامج قُرئ من ملف وينتظر قرار المستخدم قبل استبدال الحالي
+const pending = ref<Program | null>(null)
+const confirmOpen = computed({
+  get: () => !!pending.value,
+  set: (v: boolean) => {
+    if (!v) pending.value = null
+  }
+})
 
 const items = computed(() => {
   const open = { label: 'فتح', icon: 'i-lucide-file', onSelect: () => fileInput.value?.click() }
@@ -20,18 +28,36 @@ const items = computed(() => {
   ]]
 })
 
+function finishOpen() {
+  if (!pending.value) return
+  openProgram(pending.value)
+  pending.value = null
+  toast.add({ title: 'تم فتح البرنامج بنجاح', color: 'success', icon: 'i-lucide-check' })
+  navigateTo('/attendance')
+}
+
+function saveThenOpen() {
+  exportJson()
+  finishOpen()
+}
+
 async function onFile(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
   input.value = ''
   if (!file) return
   try {
-    await importJson(file)
-    toast.add({ title: 'تم استرجاع الجلسة بنجاح', color: 'success', icon: 'i-lucide-check' })
-    navigateTo('/attendance')
+    pending.value = await readProgramFile(file)
+    // لا يوجد برنامج حالي يُستبدل: نفتح مباشرة
+    if (!program.value) finishOpen()
   } catch (err) {
-    toast.add({ title: 'تعذر الاستيراد', description: (err as Error).message, color: 'error' })
+    toast.add({ title: 'تعذر فتح الملف', description: (err as Error).message, color: 'error' })
   }
+}
+
+function saveThenReset() {
+  exportJson()
+  doReset()
 }
 
 function doReset() {
@@ -67,7 +93,7 @@ function doReset() {
   <UModal
     v-model:open="confirmReset"
     title="إعادة ضبط البيانات"
-    description="سيتم حذف البرنامج وكل بيانات الحضور نهائياً. يُنصح بحفظ ملف نسخة احتياطية أولاً من قائمة «ملف» ← «حفظ»."
+    description="سيتم حذف البرنامج وكل بيانات الحضور نهائياً. هل تريد حفظ نسخة منه أولاً؟"
   >
     <template #footer>
       <div class="flex w-full justify-end gap-2">
@@ -78,8 +104,14 @@ function doReset() {
           @click="confirmReset = false"
         />
         <UButton
-          label="نعم، احذف كل شيء"
+          label="حفظ ثم حذف"
+          icon="i-lucide-save"
+          @click="saveThenReset"
+        />
+        <UButton
+          label="حذف بدون حفظ"
           color="error"
+          variant="outline"
           @click="doReset"
         />
       </div>
@@ -89,7 +121,7 @@ function doReset() {
   <UModal
     v-model:open="confirmNew"
     title="بدء برنامج جديد"
-    description="سيتم حذف بيانات البرنامج الحالي وكل بيانات الحضور نهائياً. يُنصح بحفظ ملف نسخة احتياطية أولاً من قائمة «ملف» ← «حفظ»."
+    description="سيتم حذف بيانات البرنامج الحالي وكل بيانات الحضور نهائياً. هل تريد حفظ نسخة منه أولاً؟"
   >
     <template #footer>
       <div class="flex w-full justify-end gap-2">
@@ -100,9 +132,43 @@ function doReset() {
           @click="confirmNew = false"
         />
         <UButton
-          label="نعم، احذف وابدأ برنامجاً جديداً"
+          label="حفظ ثم برنامج جديد"
+          icon="i-lucide-save"
+          @click="saveThenReset"
+        />
+        <UButton
+          label="بدون حفظ"
           color="error"
+          variant="outline"
           @click="doReset"
+        />
+      </div>
+    </template>
+  </UModal>
+
+  <UModal
+    v-model:open="confirmOpen"
+    title="استبدال البرنامج الحالي؟"
+    :description="`سيتم استبدال «${program?.name ?? ''}» بالبرنامج «${pending?.name ?? ''}». هل تريد حفظ نسخة من الحالي أولاً؟`"
+  >
+    <template #footer>
+      <div class="flex w-full flex-wrap justify-end gap-2">
+        <UButton
+          label="إلغاء"
+          color="neutral"
+          variant="outline"
+          @click="pending = null"
+        />
+        <UButton
+          label="فتح بدون حفظ"
+          color="error"
+          variant="outline"
+          @click="finishOpen"
+        />
+        <UButton
+          label="حفظ ثم فتح"
+          icon="i-lucide-save"
+          @click="saveThenOpen"
         />
       </div>
     </template>

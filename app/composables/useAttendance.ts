@@ -75,10 +75,12 @@ export function useAttendance() {
     downloadBlob(blob, `${program.value.name || 'attendance'}.json`)
   }
 
-  async function importJson(file: File) {
-    const data = JSON.parse(await file.text())
-    if (!isValidProgram(data)) throw new Error('الملف غير صالح، اختر ملفاً محفوظاً من التطبيق')
-    data.savedSessions = Array.isArray(data.savedSessions) ? data.savedSessions : []
+  /** يقرأ الملف ويتحقق منه فقط؛ لا يغيّر البرنامج الحالي حتى يُستدعى openProgram */
+  async function readProgramFile(file: File): Promise<Program> {
+    return parseProgramJson(await file.text())
+  }
+
+  function openProgram(data: Program) {
     program.value = data
   }
 
@@ -90,6 +92,6 @@ export function useAttendance() {
   return {
     program, totalSessions, report,
     createProgram, removeParticipant, isPresent, setPresent, setAll, markSaved, isSaved, presentCount,
-    exportJson, importJson, reset
+    exportJson, readProgramFile, openProgram, reset
   }
 }

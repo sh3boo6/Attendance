@@ -7,13 +7,16 @@ const toast = useToast()
 const name = ref('')
 const days = ref(1)
 const sessionsPerDay = ref(1)
-const participants = ref<Participant[]>([])
+// مستورد من Excel + مضاف يدوياً: إعادة رفع الملف تستبدل المستورد فقط وتُبقي المضافين يدوياً
+const imported = ref<Participant[]>([])
+const manual = ref<Participant[]>([])
+const participants = computed(() => [...imported.value, ...manual.value])
 const showAddParticipant = ref(false)
 const newParticipant = ref({ name: '', nationalId: '', org: '' })
 
 function addParticipant() {
   if (!newParticipant.value.name.trim()) return
-  participants.value.push({
+  manual.value.push({
     id: crypto.randomUUID(),
     name: newParticipant.value.name.trim(),
     nationalId: newParticipant.value.nationalId.trim(),
@@ -21,6 +24,7 @@ function addParticipant() {
   })
   newParticipant.value = { name: '', nationalId: '', org: '' }
   showAddParticipant.value = false
+  toast.add({ title: 'تمت إضافة المشارك', color: 'success', icon: 'i-lucide-check' })
 }
 const fileName = ref('')
 const loading = ref(false)
@@ -33,13 +37,13 @@ async function onExcel(e: Event) {
   if (!file) return
   try {
     loading.value = true
-    participants.value = await parseParticipants(file)
+    imported.value = await parseParticipants(file)
     fileName.value = file.name
-    if (!participants.value.length) {
+    if (!imported.value.length) {
       toast.add({ title: 'لم يُعثر على مشاركين في الملف', color: 'warning' })
     }
   } catch (err) {
-    participants.value = []
+    imported.value = []
     fileName.value = ''
     toast.add({ title: 'تعذرت قراءة الملف', description: (err as Error).message, color: 'error' })
   } finally {
@@ -235,7 +239,7 @@ function start() {
               <span class="min-w-0 flex-1">
                 <span class="block truncate text-sm font-semibold">{{ fileName || 'اختر ملف Excel' }}</span>
                 <span class="block text-xs text-muted">
-                  {{ participants.length ? `${participants.length} مشارك · اضغط للتغيير` : 'الاسم · رقم الهوية · الجهة' }}
+                  {{ participants.length ? `${participants.length} مشارك${manual.length ? ` (${manual.length} يدوياً)` : ''}${imported.length ? ' · اضغط لتغيير الملف' : ''}` : 'الاسم · رقم الهوية · الجهة' }}
                 </span>
               </span>
               <input
@@ -334,59 +338,59 @@ function start() {
             @click="start"
           />
         </div>
+      </template>
+    </UModal>
 
-        <UModal
-          v-model:open="showAddParticipant"
-          title="إضافة مشارك يدوياً"
-        >
-          <template #body>
-            <div class="space-y-3">
-              <div>
-                <label class="mb-1 block text-sm font-medium">الاسم</label>
-                <UInput
-                  :model-value="newParticipant.name"
-                  placeholder="الاسم"
-                  class="w-full"
-                  @update:model-value="(v: string | number | null | undefined) => newParticipant.name = toEnglishDigits(v)"
-                />
-              </div>
-              <div>
-                <label class="mb-1 block text-sm font-medium">رقم الهوية</label>
-                <UInput
-                  :model-value="newParticipant.nationalId"
-                  placeholder="رقم الهوية"
-                  class="w-full"
-                  @update:model-value="(v: string | number | null | undefined) => newParticipant.nationalId = toEnglishDigits(v)"
-                />
-              </div>
-              <div>
-                <label class="mb-1 block text-sm font-medium">المدرسة أو جهة العمل</label>
-                <UInput
-                  :model-value="newParticipant.org"
-                  placeholder="المدرسة أو جهة العمل"
-                  class="w-full"
-                  @update:model-value="(v: string | number | null | undefined) => newParticipant.org = toEnglishDigits(v)"
-                />
-              </div>
-            </div>
-          </template>
-          <template #footer>
-            <div class="flex w-full justify-end gap-2">
-              <UButton
-                label="إلغاء"
-                color="neutral"
-                variant="outline"
-                @click="showAddParticipant = false"
-              />
-              <UButton
-                label="إضافة"
-                icon="i-lucide-plus"
-                :disabled="!newParticipant.name.trim()"
-                @click="addParticipant"
-              />
-            </div>
-          </template>
-        </UModal>
+    <UModal
+      v-model:open="showAddParticipant"
+      title="إضافة مشارك يدوياً"
+    >
+      <template #body>
+        <div class="space-y-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium">الاسم</label>
+            <UInput
+              :model-value="newParticipant.name"
+              placeholder="الاسم"
+              class="w-full"
+              @update:model-value="(v: string | number | null | undefined) => newParticipant.name = toEnglishDigits(v)"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium">رقم الهوية</label>
+            <UInput
+              :model-value="newParticipant.nationalId"
+              placeholder="رقم الهوية"
+              class="w-full"
+              @update:model-value="(v: string | number | null | undefined) => newParticipant.nationalId = toEnglishDigits(v)"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium">المدرسة أو جهة العمل</label>
+            <UInput
+              :model-value="newParticipant.org"
+              placeholder="المدرسة أو جهة العمل"
+              class="w-full"
+              @update:model-value="(v: string | number | null | undefined) => newParticipant.org = toEnglishDigits(v)"
+            />
+          </div>
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <UButton
+            label="إلغاء"
+            color="neutral"
+            variant="outline"
+            @click="showAddParticipant = false"
+          />
+          <UButton
+            label="إضافة"
+            icon="i-lucide-plus"
+            :disabled="!newParticipant.name.trim()"
+            @click="addParticipant"
+          />
+        </div>
       </template>
     </UModal>
   </div>

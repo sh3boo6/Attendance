@@ -1,22 +1,11 @@
 <script setup lang="ts">
 import { ar } from '@nuxt/ui/locale'
 
-definePageMeta({
-  pageTransition: {
-    name: 'slide-right',
-    mode: 'out-in'
-  },
-  middleware(to) {
-    if (to.meta.pageTransition && typeof to.meta.pageTransition !== 'boolean') {
-      to.meta.pageTransition.name = to.path === '/attendance' ? 'slide-left' : 'slide-right'
-    }
-  }
-})
-
 const toaster = { position: 'top-center' as const }
 </script>
 
 <template>
+  <NuxtLoadingIndicator />
   <UApp
     :locale="ar"
     :toaster="toaster"

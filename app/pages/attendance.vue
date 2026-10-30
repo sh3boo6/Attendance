@@ -3,6 +3,13 @@ import { getPaginationRowModel } from '@tanstack/vue-table'
 import type { TableColumn } from '@nuxt/ui'
 import type { Participant } from '~/types'
 
+definePageMeta({
+  pageTransition: {
+    name: 'slide-right',
+    mode: 'out-in'
+  }
+})
+
 const { program, removeParticipant, isPresent, setPresent, setAll, markSaved, isSaved, presentCount } = useAttendance()
 const toast = useToast()
 

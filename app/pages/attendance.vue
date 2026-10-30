@@ -31,6 +31,21 @@ function addParticipant() {
   showAddParticipant.value = false
 }
 const toDelete = ref<Participant | null>(null)
+const showEdit = ref(false)
+const editing = ref<Participant | null>(null)
+
+function openEdit(p: Participant) {
+  editing.value = { ...p }
+  showEdit.value = true
+}
+
+function saveEdit() {
+  if (!program.value || !editing.value) return
+  const idx = program.value.participants.findIndex(x => x.id === editing.value!.id)
+  if (idx >= 0) program.value.participants[idx] = { ...editing.value }
+  editing.value = null
+  showEdit.value = false
+}
 const confirmDelete = computed({
   get: () => !!toDelete.value,
   set: (v: boolean) => {
@@ -239,6 +254,14 @@ function save() {
         </template>
         <template #actions-cell="{ row }">
           <UButton
+            icon="i-lucide-pencil"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            :aria-label="`تعديل ${row.original.name}`"
+            @click="openEdit(row.original)"
+          />
+          <UButton
             icon="i-lucide-trash-2"
             color="error"
             variant="ghost"
@@ -338,6 +361,52 @@ function save() {
             label="نعم، احذف"
             color="error"
             @click="doDelete"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="showEdit"
+      title="تعديل مشارك"
+    >
+      <template #body>
+        <div class="space-y-3">
+          <div>
+            <label class="mb-1 block text-sm font-medium">الاسم</label>
+            <UInput
+              v-model="editing!.name"
+              class="w-full"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium">رقم الهوية</label>
+            <UInput
+              v-model="editing!.nationalId"
+              class="w-full"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium">المدرسة أو جهة العمل</label>
+            <UInput
+              v-model="editing!.org"
+              class="w-full"
+            />
+          </div>
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <UButton
+            label="إلغاء"
+            color="neutral"
+            variant="outline"
+            @click="showEdit = false"
+          />
+          <UButton
+            label="حفظ"
+            icon="i-lucide-check"
+            @click="saveEdit"
           />
         </div>
       </template>

@@ -2,7 +2,7 @@ import type { Participant, Program, ReportRow } from '~/types'
 
 export const STORAGE_KEY = 'attendance:program:v1'
 
-const DAY_NAMES = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس']
+export const DAY_NAMES = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس']
 const SESSION_NAMES = ['الأولى', 'الثانية', 'الثالثة']
 
 export const dayLabel = (day: number) => `اليوم ${DAY_NAMES[day - 1]}`

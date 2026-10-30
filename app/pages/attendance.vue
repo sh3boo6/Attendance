@@ -2,6 +2,7 @@
 import { getPaginationRowModel } from '@tanstack/vue-table'
 import type { TableColumn } from '@nuxt/ui'
 import type { Participant } from '~/types'
+import { DAY_NAMES } from '~/composables/useAttendance'
 
 definePageMeta({
   pageTransition: {
@@ -83,7 +84,7 @@ const columns: TableColumn<Participant>[] = [
 ]
 
 const dayItems = computed(() =>
-  Array.from({ length: program.value?.days ?? 0 }, (_, i) => ({ label: dayLabel(i + 1), value: String(i + 1) })))
+  Array.from({ length: program.value?.days ?? 0 }, (_, i) => ({ label: DAY_NAMES[i], value: String(i + 1) })))
 const sessionItems = computed(() =>
   Array.from({ length: program.value?.sessionsPerDay ?? 0 }, (_, i) => ({
     label: sessionLabel(i + 1),
@@ -119,14 +120,19 @@ function save() {
     v-if="program"
     class="space-y-4 pb-64 sm:pb-0"
   >
-    <UTabs
-      v-model="day"
-      :items="dayItems"
-      :content="false"
-      variant="pill"
-      class="w-full"
-      :ui="{ list: 'overflow-x-auto' }"
-    />
+    <div class="space-y-1">
+      <p class="text-sm font-medium text-muted">
+        اليوم
+      </p>
+      <UTabs
+        v-model="day"
+        :items="dayItems"
+        :content="false"
+        variant="pill"
+        class="w-full"
+        :ui="{ list: 'overflow-x-auto' }"
+      />
+    </div>
     <UTabs
       v-model="session"
       :items="sessionItems"

@@ -43,7 +43,7 @@ async function install() {
   >
     <div
       v-if="visible"
-      class="fixed inset-x-3 bottom-44 z-40 mx-auto max-w-md sm:bottom-4 sm:start-4 sm:mx-0"
+      class="fixed inset-x-3 bottom-44 z-40 mx-auto max-w-md sm:bottom-4 sm:inset-s-4 sm:mx-0"
       role="dialog"
       aria-label="تثبيت التطبيق"
     >

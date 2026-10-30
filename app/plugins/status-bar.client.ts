@@ -1,12 +1,12 @@
 // iOS لا يحدّث شريط الحالة (الإشارة والواي فاي) عند تبديل المظهر داخل التطبيق إلا بعد أول تفاعل،
 // فنحدّث theme-color حسب مظهر التطبيق (لا مظهر الجهاز) ونُجبر المتصفح على إعادة الرسم فوراً.
-const COLORS = { light: '#ffffff', dark: '#09090b' } as const
-
 export default defineNuxtPlugin(() => {
   const colorMode = useColorMode()
 
-  function apply(mode: string) {
-    const color = mode === 'dark' ? COLORS.dark : COLORS.light
+  async function apply(nudge = true) {
+    // ننتظر تطبيق صنف .dark على الصفحة ثم نقرأ لون الخلفية الفعلي، فيطابق الشريط والطبقة الصفحة تماماً
+    await nextTick()
+    const color = getComputedStyle(document.body).backgroundColor
 
     // نُبقي وسماً واحداً بدون media حتى لا يغلب مظهر الجهاز مظهر التطبيق
     const metas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')]
@@ -15,16 +15,22 @@ export default defineNuxtPlugin(() => {
     meta.removeAttribute('media')
     meta.setAttribute('content', color)
 
-    // إعادة رسم إجبارية
-    const root = document.documentElement
-    root.style.transform = 'translateZ(0)'
-    void root.offsetHeight
-    requestAnimationFrame(() => {
-      root.style.transform = ''
-      window.scrollBy(0, 1)
-      window.scrollBy(0, -1)
-    })
+    if (!nudge) return
+
+    // فتح أي قائمة أو نافذة يجعل iOS يعيد قراءة لون الشريط، فنحاكي ذلك: طبقة بلون الخلفية
+    // الجديدة تغطي الشاشة لحظة قصيرة مع قفل التمرير، ثم تُزال. لونها مطابق للخلفية فلا يظهر فرق.
+    const overlay = document.createElement('div')
+    overlay.setAttribute('aria-hidden', 'true')
+    overlay.style.cssText = `position:fixed;inset:0;z-index:2147483647;pointer-events:none;background:${color}`
+    document.body.appendChild(overlay)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    setTimeout(() => {
+      overlay.remove()
+      document.body.style.overflow = prevOverflow
+    }, 80)
   }
 
-  watch(() => colorMode.value, mode => apply(mode), { immediate: true })
+  // أول تحميل: نضبط الوسم فقط بلا طبقة
+  watch(() => colorMode.value, (_, old) => apply(old !== undefined), { immediate: true })
 })

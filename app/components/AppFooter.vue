@@ -18,7 +18,7 @@ const { program } = useAttendance()
         >
         <p>برمجة وتصميم <span class="font-semibold text-default">محمد عبدالرحمن</span></p>
       </div>
-      <div class="max-w-md lg:max-w-lg">
+      <div class="w-full lg:max-w-none">
         <UMarquee>
           <UButton
             :ui="{ leadingIcon: 'size-5 lg:size-7 shrink-0' }"

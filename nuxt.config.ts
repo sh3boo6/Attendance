@@ -11,7 +11,11 @@ export default defineNuxtConfig({
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
-        { name: 'description', content: 'تطبيق تحضير المشاركين وإصدار تقرير استحقاق الشهادات' }
+        { name: 'description', content: 'تطبيق تحضير المشاركين وإصدار تقرير استحقاق الشهادات' },
+
+        // دعم الألوان المتغيرة مع النظام (System Preference) للـ Browser Header
+        { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
+        { name: 'theme-color', content: '#09090b', media: '(prefers-color-scheme: dark)' }
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/img/logo.png' },

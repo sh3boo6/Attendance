@@ -80,9 +80,9 @@ function start() {
 <template>
   <div class="pb-20 sm:pb-0">
     <!-- ترويسة ترحيبية -->
-    <section class="relative mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500 p-6 text-white shadow-lg sm:p-10">
-      <div class="pointer-events-none absolute -start-16 -top-16 size-56 rounded-full bg-white/10" />
-      <div class="pointer-events-none absolute -bottom-20 end-10 size-48 rounded-full bg-white/10" />
+    <section class="relative mb-6 overflow-hidden rounded-2xl bg-linear-to-br from-primary-700 via-primary-600 to-primary-500 p-6 text-white shadow-lg sm:p-10">
+      <div class="pointer-events-none absolute -inset-s-16 -top-16 size-56 rounded-full bg-white/10" />
+      <div class="pointer-events-none absolute -bottom-20 inset-e-10 size-48 rounded-full bg-white/10" />
       <div class="relative flex items-center gap-4 sm:gap-6">
         <img
           src="/img/logo.png"

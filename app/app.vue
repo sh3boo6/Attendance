@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ar } from '@nuxt/ui/locale'
 
-const toaster = { position: 'top-center' as const }
+const toaster = { position: 'top-center' as const, duration: 2000, progress: false }
 </script>
 
 <template>

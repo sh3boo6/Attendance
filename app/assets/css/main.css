@@ -22,3 +22,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
 
 /* منع الزوم بالنقر المزدوج */
 html, body { touch-action: manipulation; }
+
+/* حالة النظام (شريط الحالة في iOS) تتبع color-scheme على الجذر مباشرة */
+:root { color-scheme: light; }
+:root.dark { color-scheme: dark; }

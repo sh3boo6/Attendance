@@ -78,7 +78,7 @@ function start() {
 </script>
 
 <template>
-  <div class="pb-20 sm:pb-0">
+  <div class="overflow-x-hidden pb-20 sm:pb-0">
     <!-- ترويسة ترحيبية -->
     <section class="relative mb-6 overflow-hidden rounded-2xl bg-linear-to-br from-primary-700 via-primary-600 to-primary-500 p-6 text-white shadow-lg sm:p-10">
       <div class="pointer-events-none absolute -inset-s-16 -top-16 size-56 rounded-full bg-white/10" />

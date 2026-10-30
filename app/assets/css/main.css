@@ -16,6 +16,7 @@
   --color-primary-950: #042f2e;
 }
 
+html, body { overflow-x: hidden; }
 html { -webkit-tap-highlight-color: transparent; }
 body { padding-bottom: env(safe-area-inset-bottom); }
 

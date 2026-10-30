@@ -21,5 +21,6 @@ const toaster = { position: 'top-center' as const }
     </div>
     <MobileNav />
     <InstallPrompt />
+    <OfflineStatus />
   </UApp>
 </template>
